@@ -13,10 +13,23 @@ trait Hello {
 //TODO 
 struct Student {}
 impl Hello for Student {
+    fn say_something(&self) -> String {
+        String::from("I'm a good student")
+    }
+    fn say_hi(&self) -> String {
+        String::from("hi")
+    }
 }
 //TODO
 struct Teacher {}
 impl Hello for Teacher {
+    fn say_hi(&self) -> String {
+        String::from("Hi, I'm your new teacher")
+    }
+
+    fn say_something(&self) -> String {
+        String::from("I'm not a bad teacher")
+    }
 }
 
 
@@ -24,18 +37,21 @@ impl Hello for Teacher {
 // Make it compile in unit test for exercise 2
 // Hint: use #[derive]  for struct Point 
 // Run tests
+
+#[derive(Debug)]
+#[derive(PartialEq)]
 struct Point {
     x: i32,
     y: i32,
 }
 
 
-// Exercise 3
-// Make it compile 
-// Implement `fn sum` with trait bound in two ways.
-// Run tests
-// Hint: Trait Bound
-fn sum<T>(x: T, y: T) -> T {
+// // Exercise 3
+// // Make it compile 
+// // Implement `fn sum` with trait bound in two ways.
+// // Run tests
+// // Hint: Trait Bound
+fn sum<T: std::ops::Add<Output = T>>(x: T, y: T) -> T {
     x + y
 }
 
@@ -57,15 +73,14 @@ impl Foo for String {
 }
 
 // IMPLEMENT below with generics and parameters
-fn static_dispatch(x) {
+fn static_dispatch<T: Foo>(x : T) {
     todo!()
 }
 
 // Implement below with trait objects and parameters
-fn dynamic_dispatch(x) {
+fn dynamic_dispatch(x: &dyn Foo) {
     todo!()
 }
-
 // Exercise 5 
 // Fix errors and fill in the blanks 
 // Run tests
@@ -90,14 +105,14 @@ fn draw_with_box(x: Box<dyn Draw>) {
     x.draw();
 }
 
-fn draw_with_ref(x: __) {
+fn draw_with_ref(x: &dyn Draw) {
     x.draw();
 }
 
-// Exercise 6
-// Fix errors and implement 
-// Run tests
-// Hint: Associated Type
+// // Exercise 6
+// // Fix errors and implement 
+// // Run tests
+// // Hint: Associated Type
 
 trait Container {
     type Item;
@@ -105,12 +120,33 @@ trait Container {
     fn remove(&mut self) -> Option<Self::Item>;
     fn is_empty(&self) -> bool;
 }
-
+ 
 struct Stack {
     items: Vec<u8>,
 }
 
 //TODO implement Container for Stack
+
+impl Container for Stack 
+{
+    type Item = u8;
+    fn insert(&mut self, item: Self::Item)
+    {
+        self.items.push(item);
+    }
+    fn remove(&mut self) -> Option<Self::Item>
+    {
+        match  self.items.len() {
+            0 => None,
+            _ => Some(self.items.pop().unwrap())
+        }
+        
+    }
+    fn is_empty(&self) -> bool
+    {
+        self.items.is_empty()
+    }
+}
 
 
 
@@ -161,7 +197,7 @@ mod tests {
         let y = 8u8;
     
         // Draw x.
-        draw_with_box(__);
+        draw_with_box(Box::new(x));
     
         // Draw y.
         draw_with_ref(&y);
@@ -169,7 +205,7 @@ mod tests {
 
     #[test]
     fn exercise6_should_work(){
-        let mut stack: Stack<u8> = Stack { items: Vec::new() };
+        let mut stack= Stack { items: Vec::new() };
         assert!(stack.is_empty());
         stack.insert(1);
         stack.insert(2);
