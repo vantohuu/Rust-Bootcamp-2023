@@ -188,7 +188,7 @@ mod tests {
         let y = "Hello".to_string();
     
         static_dispatch(x);
-        dynamic_dispatch(&y); 
+        dynamic_dispatch(&y);
     }
 
     #[test]
