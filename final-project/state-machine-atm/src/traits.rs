@@ -11,19 +11,23 @@ pub trait StateMachine {
     type Transition;
 
     /// Calculate the resulting state when this state undergoes the given transition
-    fn next_state(starting_state: &Self::State, t: &Self::Transition) -> Self::State;
+    fn next_state(starting_state: &mut Self::State, t: &Self::Transition) -> Self::State;
 }
 
 
 
 // Simple helper to do some hashing.
-fn hash<T>(t: &T) -> u64 {
-    todo!("Final Project");
+pub fn hash<T>(t: &T)  -> u64  where T: Hash  {
+    let mut hasher = DefaultHasher::new();
+    t.hash(&mut hasher);
+    println!("Hash is {:x}!", hasher.finish());
+    hasher.finish()
 }
 
 // Test for hash function 
 #[test]
 fn test_hash_enum_vec() {
+    #[derive(Hash)]
     enum KeyTest{
         One,
         Two,
